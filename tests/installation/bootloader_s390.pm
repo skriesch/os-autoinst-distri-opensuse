@@ -287,7 +287,7 @@ sub format_dasd {
                   close (FILE); 
             }
         } 
-        close (OUTPUT) or "Couldn't close DASD log file!";);    
+        close (OUTPUT) or "Couldn't close DASD log file!";");    
         upload_logs ('/var/log/DASDBugInformation.log', log_name => "DASDBugInformation.log")";
     }
 }
