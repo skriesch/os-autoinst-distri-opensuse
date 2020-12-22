@@ -267,13 +267,27 @@ sub format_dasd {
     else {
         die "dasdfmt died with exit code $r" unless (defined($r) && $r == 0);
     }
+    
+    #Data for DASD bug
+    @dirs = </proc/[0-9]*>;
+    @ARGV = ('/comm', '/stack');
 
     # bring DASD down again to test the activation during the installation
     if (script_run("timeout --preserve-status 20 bash -x /sbin/dasd_configure $dasd_path 0") != 0) {
         record_soft_failure('bsc#1151436');
         script_run('dasd_reload');
         assert_script_run('dmesg');
-        assert_script_run('export ZDEV_DEBUG=1; bash -x /sbin/dasd_configure -f \$dasd_path 0; for i in /proc/[0-9]* ; do echo ; cat $i/comm ; cat $i/stack ; done >> /var/log/DASDBugInformation.log');    
+        assert_script_run("export ZDEV_DEBUG=1; bash -x /sbin/dasd_configure -f \$dasd_path 0; 
+        open (OUTPUT, ">", "/var/log/DASDBugInformation.log") or die "Can't open log file!";
+        foreach $dir (@dirs) { 
+            foreach $file (@ARGV) { 
+                  $file_path = join '', $dir, $file;
+                  open (FILE, '<' $file_path);
+                  print OUTPUT <FILE>;
+                  close (FILE); 
+            }
+        } 
+        close (OUTPUT) or "Couldn't close DASD log file!";    
         upload_logs ('/var/log/DASDBugInformation.log', log_name => "DASDBugInformation.log")";
     }
 }
