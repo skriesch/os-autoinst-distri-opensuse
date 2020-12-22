@@ -274,6 +274,8 @@ sub format_dasd {
         script_run('dasd_reload');
         assert_script_run('dmesg');
         assert_script_run("bash -x /sbin/dasd_configure -f $dasd_path 0");
+        assert_script_run('export ZDEV_DEBUG=1; bash -x /sbin/dasd_configure -f "$dasd_path" 0; for i in /proc/[0-9]* ; do echo ; cat $i/comm ; cat $i/stack ; done >> /var/log/DASDBugInformation.log');     
+        upload_logs ('/var/log/DASDBugInformation.log', log_name => "DASDBugInformation.log")";
     }
 }
 
