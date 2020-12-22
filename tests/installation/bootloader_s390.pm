@@ -277,7 +277,7 @@ sub format_dasd {
         record_soft_failure('bsc#1151436');
         script_run('dasd_reload');
         assert_script_run('dmesg');
-        assert_script_run("export ZDEV_DEBUG=1; bash -x /sbin/dasd_configure -f \$dasd_path 0; 
+        script_run("export ZDEV_DEBUG=1; bash -x /sbin/dasd_configure -f \$dasd_path 0; 
         open (OUTPUT, ">", "/var/log/DASDBugInformation.log") or die "Can't open log file!";
         foreach $dir (@dirs) { 
             foreach $file (@ARGV) { 
